@@ -9,12 +9,19 @@ use Illuminate\Http\Request;
 
 class CombateController extends Controller
 {
+
+    protected $combateService;
+
+    public function __construct(CombateService $combateService){
+        $this->combateService = $combateService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $combates = Combate::with('entrenador1', 'entrenador2')->orderBy('fecha', 'desc')->get();
+        return view('combates.index', compact('combates'));
     }
 
     /**
@@ -22,7 +29,11 @@ class CombateController extends Controller
      */
     public function create()
     {
-        //
+        $entrenadores = Entrenador::has('pokemon', '>=', 3)->get();
+        if($entrenadores->count() < 2){
+            return redirect()->route('combates.index')->with('error', 'Se necesitan dos entrenadores con 3 pokemons para crear un combate');
+        }
+        return view('combates.create', compact('entrenadores'));
     }
 
     /**
