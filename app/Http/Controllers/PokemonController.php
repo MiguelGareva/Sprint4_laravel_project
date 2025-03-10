@@ -44,30 +44,54 @@ class PokemonController extends Controller
             return redirect()->back()->withErrors(['entrenador_id' => 'El entrenador ya ha alcanzado el máximo de pokemons'])
                 ->withInput();
         }
+
+        $pokemon = Pokemon::create($validated);
+
+        return redirect()->route('pokemon.show', $pokemon)->with('success', 'Pokemon creado correctamente');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Pokemon $pokemon)
     {
-        //
+        $pokemon->load('entrenador');
+        return view('pokemon.show', compact('pokemon'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Pokemon $pokemon)
     {
-        //
+        $entrenadores = Entrenador::all();
+        return view('pokemon.edit', compact('pokemon', 'entrenadores'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Pokemon $pokemon)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:25',
+            'tipo' => 'required|string|max:20',
+            'stats' => 'required|integer|min:1|max:780',
+            'nivel' => 'required|integer|min:1|max:100',
+            'entrenador_id' => 'required|exists:entrenadores,id'
+        ]);
+
+        if($pokemon->entrenador_id != $validated['entrenador_id']){
+            $entrenador = Entrenador::findOrFail($validated['entrenador_id']);
+            if($entrenador->pokemon->count() >= 3){
+                return back()->withErrors(['entrenador_id' => 'El entrenador ya ha alcanzado el máximo de pokemons'])
+                    ->withInput();
+            }
+        }
+
+        $pokemon->update($validated);
+
+        return redirect()->route('pokemon.show', $pokemon)->with('success', 'Pokemon actualizado correctamente');
     }
 
     /**
