@@ -41,7 +41,34 @@ class CombateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'entrenador1_id' => 'required|exists:entrenadores,id',
+            'entrenador2_id' => 'required|exists:entrenadores,id|different:entrenador1_id',
+            'fecha' => 'required|date'
+        ]);
+
+        $entrenador1 = Entrenador::find($validated['entrenador1_id']);
+        $entrenador2 = Entrenador::find($validated['entrenador2_id']);
+
+        if($entrenador1->pokemon->count() < 3 || $entrenador2->pokemon->count() < 3){
+            return back()->withErrors(['error' => 'Ambos entrenadores deben tener 3 pokemons para poder combatir'])->withInput();
+        }
+
+        $resultado = $this->combateService->realizarCombate($entrenador1, $entrenador2);
+
+        $combate = Combate::create([
+            'entrenador1_id' => $validated['entrenador1_id'],
+            'entrenador2_id' => $validated['entrenador2_id'],
+            'fecha' => $validated['fecha'],
+            'resultado' => $resultado['resultado']
+        ]);
+
+        $entrenador1->puntos += $resultado['puntos_entrenador1'];
+        $entrenador2->puntos += $resultado['puntos_entrenador2'];
+        $entrenador1->save();
+        $entrenador2->save();
+
+        return redirect()->route('combates.show', $combate)->with('success', 'Combate realizado correctamente');
     }
 
     /**
