@@ -39,9 +39,10 @@ class EntrenadorController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Entrenador $entrenador)
     {
-        //
+        $entrenador->load('pokemon');
+        return view('entrenadores.show', compact('entrenador'));
     }
 
     /**
@@ -49,7 +50,7 @@ class EntrenadorController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        return view('entrenadores.edit', compact('entrenador'));
     }
 
     /**
