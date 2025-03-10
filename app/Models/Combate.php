@@ -24,4 +24,5 @@ class Combate extends Model
     public function entrenador2(){
         return $this->belongsTo(Entrenador::class, 'entrenador2_id');
     }
+    
 }
