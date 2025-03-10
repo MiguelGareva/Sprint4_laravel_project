@@ -28,7 +28,7 @@ class EntrenadorController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:60',
-            'email' => 'required|email|unique:entrenadores.mail'
+            'email' => 'required|email|unique:entrenadores,mail'
         ]);
 
         $entrenador = Entrenador::create($validated);
@@ -48,7 +48,7 @@ class EntrenadorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Entrenador $entrenador)
     {
         return view('entrenadores.edit', compact('entrenador'));
     }
@@ -56,16 +56,24 @@ class EntrenadorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Entrenador $entrenador)
     {
-        //
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:60',
+            'email' => 'required|email|unique:entrenadores,mail,' . $entrenador->id
+        ]);
+
+        $entrenador->update($validated);
+
+        return redirect()->route('entrenadores.show', $entrenador)->with('success', 'Entrenador actualizado correctamente');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Entrenador $entrenador)
     {
-        //
+        $entrenador->delete();
+        return redirect()->route('entrenadores.index')->with('success', 'Entrenador eliminado correctamente');
     }
 }
