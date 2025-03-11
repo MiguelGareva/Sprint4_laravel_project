@@ -74,32 +74,50 @@ class CombateController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Combate $combate)
     {
-        //
+        $combate->load('entrenador1', 'entrenador2');
+        return view('combates.show', compact('combate'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Combate $combate)
     {
-        //
+        return redirect()->route('combates.show', $combate)->with('error', 'No se pueden editar combates ya realizados');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Combate $combate)
     {
-        //
+        return redirect()->route('combates.show', $combate)->with('error', 'No se pueden actualizar combates ya realizados');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Combate $combate)
     {
-        //
+        $entrenador1 = $combate->entrenador1;
+        $entrenador2 = $combate->entrenador2;
+
+        if($combate->resultado == 'entrenador1'){
+            $entrenador1->puntos -= 3;
+        }else if($combate->resultado == 'entrenador2'){
+            $entrenador2->puntos -= 3;
+        }else{
+            $entrenador1->puntos -= 1;
+            $entrenador2->puntos -= 1;
+        }
+
+        $entrenador1->save();
+        $entrenador2->save();
+
+        $combate->delete();
+
+        return redirect()->route('combates.index')->with('success', 'Combate eliminado correctamente y puntos actualizados');
     }
 }
