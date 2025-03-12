@@ -6,11 +6,11 @@ use App\Http\Controllers\PokemonController;
 use App\Http\Controllers\CombateController;
 
 Route::get('/', function () {
-    return redirect()->route('entrenadores.index');
-});
+    return view('welcome');
+})->name('home');
 
-Route::resource('entrenadores', EntrenadorController::class);
+Route::resource('entrenadores', EntrenadorController::class);/*
 
 Route::resource('pokemon', PokemonController::class);
 
-Route::resource('combates', CombateController::class);
+Route::resource('combates', CombateController::class);*/

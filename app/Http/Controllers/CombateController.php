@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Combate;
 use App\Models\Entrenador;
-use App\Services\CombateService; //Próximamente
+use App\Services\CombateService;
 use Illuminate\Http\Request;
 
 class CombateController extends Controller
