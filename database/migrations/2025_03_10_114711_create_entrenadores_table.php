@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('email')->unique();
             $table->integer('puntos')->default(0);
-            $table->timestamp('fecha_registro')->useCurrent();
+            $table->datetime('fecha_registro')->useCurrent();
             $table->timestamps();
         });
     }

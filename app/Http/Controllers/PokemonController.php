@@ -23,7 +23,7 @@ class PokemonController extends Controller
     public function create()
     {
         $entrenadores = Entrenador::all();
-        return view('pokemon.create', compact('entrenadors'));
+        return view('pokemon.create', compact('entrenadores'));
     }
 
     /**

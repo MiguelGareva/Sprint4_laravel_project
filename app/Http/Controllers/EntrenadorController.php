@@ -28,8 +28,11 @@ class EntrenadorController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:60',
-            'email' => 'required|email|unique:entrenadores,mail'
+            'email' => 'required|email|unique:entrenadores,email'
         ]);
+        
+        $validated['fecha_registro'] = now();
+        $validated['puntos'] = 0;
 
         $entrenador = Entrenador::create($validated);
 

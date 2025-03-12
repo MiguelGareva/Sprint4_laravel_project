@@ -17,6 +17,9 @@ class Entrenador extends Model
         'puntos', 
         'fecha_registro'
     ];
+    protected $casts = [
+        'fecha_registro' => 'date', 
+    ];
 
     public function pokemon(){
         return $this->hasMany(Pokemon::class);
