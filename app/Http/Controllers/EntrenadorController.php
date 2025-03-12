@@ -30,7 +30,7 @@ class EntrenadorController extends Controller
             'nombre' => 'required|string|max:60',
             'email' => 'required|email|unique:entrenadores,email'
         ]);
-        
+
         $validated['fecha_registro'] = now();
         $validated['puntos'] = 0;
 
@@ -63,7 +63,7 @@ class EntrenadorController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:60',
-            'email' => 'required|email|unique:entrenadores,mail,' . $entrenador->id
+            'email' => 'required|email|unique:entrenadores,email,' . $entrenador->id
         ]);
 
         $entrenador->update($validated);
