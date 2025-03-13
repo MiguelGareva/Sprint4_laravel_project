@@ -57,9 +57,16 @@ class PokemonController extends Controller
                 ->with('error', 'Este entrenador ya tiene el máximo de 3 Pokémon permitidos.');
         }
 
-        $pokemon = Pokemon::create($validated);
+        if($pokemon->entrenador_id !== null){
+            return redirect()->route('pokemon.available', ['entrenador_id' => $entrenador->id])
+                ->with('error', 'Este Pokemon ya ha sido capturado por otro entrenador.');
+        }
 
-        return redirect()->route('pokemon.show', $pokemon)->with('success', 'Pokemon creado correctamente');
+        $pokemon->entrenador_id = $entrenador->id;
+        $pokemon->save();
+
+        return redirect()->route('entrenadores.show', $entrenador)
+            ->with('success', 'Has capturado un ' . $pokemon->nombre . ' con éxito.');
     }
 
     /**
