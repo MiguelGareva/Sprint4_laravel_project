@@ -18,12 +18,28 @@ class PokemonController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show available pokemon.
      */
-    public function create()
-    {
-        $entrenadores = Entrenador::all();
-        return view('pokemon.create', compact('entrenadores'));
+    public function available(Request $request){
+        $entrenador_id = $request->input('entrenador_id');
+        $entrenador = null;
+
+        if($entrenador_id){
+            $entrenador = Entrenador::findOrFail($entrenador_id);
+
+            if($entrenador->pokemon->count() >= 3){
+                return redirect()->route('entrenadores.show', $entrenador)
+                ->with('error', 'Este entrenador ya ha alcanzado el máximo permitido de pokemons.');
+            }
+        }
+
+        $pokemonDisponibles = Pokemon::whereNull('entrenador_id')->get();
+
+        if($pokemonDisponibles->isEmpty()){
+            return redirect()->route('entrenadores.show', $entrenador)
+            ->with('info', 'No hay pokemon disponibles para capturar en este momento.');
+        }
+         return view('pokemon.available', compact('pokemonDisponibles', 'entrenador'));
     }
 
     /**
