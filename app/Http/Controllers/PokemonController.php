@@ -43,22 +43,18 @@ class PokemonController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Assign a Pokemon to a trainer
      */
-    public function store(Request $request)
+    public function capture(Request $request, Pokemon $pokemon)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:25',
-            'tipo' => 'required|string|max:20',
-            'stats' => 'required|integer|min:1|max:780',
-            'nivel' => 'required|integer|min:1|max:100',
             'entrenador_id' => 'required|exists:entrenadores,id'
         ]);
 
         $entrenador = Entrenador::findOrFail($validated['entrenador_id']);
-        if($entrenador->pokemon->count() >= 3){
-            return redirect()->back()->withErrors(['entrenador_id' => 'El entrenador ya ha alcanzado el máximo de pokemons'])
-                ->withInput();
+        if ($entrenador->pokemon->count() >= 3) {
+            return redirect()->route('entrenadores.show', $entrenador)
+                ->with('error', 'Este entrenador ya tiene el máximo de 3 Pokémon permitidos.');
         }
 
         $pokemon = Pokemon::create($validated);
