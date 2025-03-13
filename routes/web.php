@@ -14,6 +14,16 @@ Route::resource('entrenadores', EntrenadorController::class)->parameters([
 
 Route::resource('pokemon', PokemonController::class);
 
+// Ruta para mostrar Pokémon disponibles para capturar
+Route::get('/pokemon/available', [PokemonController::class, 'available'])->name('pokemon.available');
+
+// Ruta para capturar un Pokémon
+Route::post('/pokemon/{pokemon}/capture', [PokemonController::class, 'capture'])->name('pokemon.capture');
+
+// Ruta para liberar un Pokémon
+Route::post('/pokemon/{pokemon}/release', [PokemonController::class, 'release'])->name('pokemon.release');
+
+
 Route::get('/combates', function() {
     return redirect()->route('entrenadores.index')
                     ->with('info', 'La sección de Combates estará disponible próximamente');
