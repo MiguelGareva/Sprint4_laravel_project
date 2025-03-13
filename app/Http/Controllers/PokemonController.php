@@ -93,14 +93,11 @@ class PokemonController extends Controller
     public function update(Request $request, Pokemon $pokemon)
     {
         $validated = $request->validate([
-            'nombre' => 'required|string|max:25',
-            'tipo' => 'required|string|max:20',
-            'stats' => 'required|integer|min:1|max:780',
             'nivel' => 'required|integer|min:1|max:100',
             'entrenador_id' => 'required|exists:entrenadores,id'
         ]);
 
-        if($pokemon->entrenador_id != $validated['entrenador_id']){
+        if (isset($validated['entrenador_id']) && $pokemon->entrenador_id != $validated['entrenador_id']){
             $entrenador = Entrenador::findOrFail($validated['entrenador_id']);
             if($entrenador->pokemon->count() >= 3){
                 return back()->withErrors(['entrenador_id' => 'El entrenador ya ha alcanzado el máximo de pokemons'])
@@ -112,13 +109,33 @@ class PokemonController extends Controller
 
         return redirect()->route('pokemon.show', $pokemon)->with('success', 'Pokemon actualizado correctamente');
     }
+    /**
+     * Release a Pokemon from trainer
+     */ 
+    public function release(Pokemon $pokemon){
+        if($pokemon->entrenador_id === null){
+            return redirect()->route('pokemon.index')
+            ->with('error', 'Este pokemon ya está liberado.');
+        }
 
+        $entrenador = $pokemon->entrenador;
+        $pokemon->entrenador_id = null;
+        $pokemon->save();
+
+        return redirect()->route('entrenadores.show', $entrenador)
+        ->with('success', 'Has liberado a ' . $pokemon->nombre . ' con éxito.');
+
+    }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Pokemon $pokemon)
     {
-        $pokemon->delete();
-        return redirect()->route('pokemon.index')->with('success', 'Pokemon eliminado correctamente');
+        if ($pokemon->entrenador_id !== null) {
+            return $this->release($pokemon);
+        }
+        
+        return redirect()->route('pokemon.index')
+            ->with('info', 'Los Pokémon no pueden ser eliminados, solo liberados si tienen entrenador.');
     }
 }
